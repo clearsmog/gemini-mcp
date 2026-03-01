@@ -10,6 +10,7 @@
  * 3. Each response returns the updated image
  */
 
+import { exec } from 'child_process'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import { Modality } from '@google/genai'
@@ -18,6 +19,14 @@ import { ensureOutputDir } from '../utils/output-dir.js'
 import { genAI, getImageModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
+
+/** Open a file with the OS default viewer (non-blocking, best-effort). */
+function openFile(filePath: string): void {
+  const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open'
+  exec(`${cmd} "${filePath}"`, (err) => {
+    if (err) logger.debug(`Could not auto-open file: ${err.message}`)
+  })
+}
 
 // Store active image editing sessions
 // The SDK handles thought signatures automatically when using chat sessions
@@ -124,8 +133,9 @@ export function registerImageEditTool(server: McpServer): void {
           lastImageMimeType: mimeType,
         })
 
-        // Save to disk
+        // Save to disk and auto-open
         const filePath = saveImage(imageData, mimeType)
+        openFile(filePath)
 
         logger.info(`Image edit session started: ${sessionId}`)
 
@@ -135,6 +145,7 @@ export function registerImageEditTool(server: McpServer): void {
               type: 'image' as const,
               data: imageData,
               mimeType,
+              annotations: { audience: ['user'], priority: 1 },
             },
             {
               type: 'text' as const,
@@ -234,8 +245,9 @@ export function registerImageEditTool(server: McpServer): void {
         session.lastImageBase64 = imageData
         session.lastImageMimeType = mimeType
 
-        // Save to disk
+        // Save to disk and auto-open
         const filePath = saveImage(imageData, mimeType)
+        openFile(filePath)
 
         logger.info(`Image edit continued successfully`)
 
@@ -245,6 +257,7 @@ export function registerImageEditTool(server: McpServer): void {
               type: 'image' as const,
               data: imageData,
               mimeType,
+              annotations: { audience: ['user'], priority: 1 },
             },
             {
               type: 'text' as const,

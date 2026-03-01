@@ -35,7 +35,21 @@ export interface GenerateOptions {
 /**
  * All supported aspect ratios for Nano Banana Pro
  */
-export type AspectRatio = '1:1' | '2:3' | '3:2' | '3:4' | '4:3' | '4:5' | '5:4' | '9:16' | '16:9' | '21:9'
+export type AspectRatio =
+  | '1:1'
+  | '2:3'
+  | '3:2'
+  | '3:4'
+  | '4:3'
+  | '4:5'
+  | '5:4'
+  | '9:16'
+  | '16:9'
+  | '21:9'
+  | '1:4'
+  | '4:1'
+  | '1:8'
+  | '8:1'
 
 /**
  * Image sizes for Nano Banana Pro (Gemini 3 Pro Image)
@@ -299,6 +313,7 @@ export interface ImageGenerationOptions {
   style?: string
   saveToFile?: boolean
   useGoogleSearch?: boolean // Ground generation in real-world info
+  thinkingLevel?: ThinkingLevel // Control reasoning depth (image model is Flash-based, all levels valid)
 }
 
 /**
@@ -320,13 +335,14 @@ export async function generateImage(
       imageSize = '2K', // Default to 2K for good balance of quality and speed
       style,
       saveToFile = true,
-      useGoogleSearch = false,
+      useGoogleSearch = true,
+      thinkingLevel = 'high',
     } = options
 
     // Build the full prompt with style if provided
     const fullPrompt = style ? `${prompt}, in ${style} style` : prompt
     logger.prompt(`Image generation: ${fullPrompt}`)
-    logger.debug(`Image config: ${aspectRatio}, ${imageSize}, search: ${useGoogleSearch}`)
+    logger.debug(`Image config: ${aspectRatio}, ${imageSize}, search: ${useGoogleSearch}, thinking: ${thinkingLevel}`)
 
     // Build the config for Nano Banana Pro
     const config: Record<string, unknown> = {
@@ -335,6 +351,7 @@ export async function generateImage(
         aspectRatio,
         imageSize,
       },
+      thinkingConfig: { thinkingLevel },
     }
 
     // Add Google Search grounding if requested
