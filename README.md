@@ -92,7 +92,7 @@ thinkingLevel: "low" | "medium" | "high" (optional)
 
 ### gemini-generate-image
 
-Generate images with Nano Banana Pro (Claude can SEE them!):
+Generate images with Nano Banana 2 (Claude can SEE them!):
 
 ```
 prompt: "a futuristic city at sunset"
@@ -311,19 +311,21 @@ The killer combination for development:
 
 ## Environment Variables
 
-| Variable                | Required | Default                      | Description                   |
-|-------------------------|----------|------------------------------|-------------------------------|
-| `GEMINI_API_KEY`        | Yes      | -                            | Your Google Gemini API key    |
-| `GEMINI_OUTPUT_DIR`     | No       | `./gemini-output`            | Where to save generated files |
-| `GEMINI_MODEL`          | No       | -                            | Override model for init test  |
-| `GEMINI_PRO_MODEL`      | No       | `gemini-3-pro-preview`       | Pro model (Gemini 3)          |
-| `GEMINI_FLASH_MODEL`    | No       | `gemini-3-flash-preview`     | Flash model (Gemini 3)        |
-| `GEMINI_IMAGE_MODEL`    | No       | `gemini-3-pro-image-preview` | Image model (Nano Banana Pro) |
-| `GEMINI_VIDEO_MODEL`    | No       | `veo-2.0-generate-001`       | Video model                   |
-| `VERBOSE`               | No       | `false`                      | Enable verbose logging        |
-| `QUIET`                 | No       | `false`                      | Minimize logging              |
-| `GEMINI_ENABLED_TOOLS`  | No       | -                            | Comma-separated list of tool groups to load (e.g., `query,search,image-gen`) |
-| `GEMINI_TOOL_PRESET`    | No       | -                            | Preset profile: `minimal`, `text`, `image`, `research`, `media`, `full` |
+| Variable                | Required | Default                          | Description                   |
+|-------------------------|----------|----------------------------------|-------------------------------|
+| `GEMINI_API_KEY`        | Yes      | -                                | Your Google Gemini API key    |
+| `GEMINI_OUTPUT_DIR`     | No       | `~/.cache/gemini-mcp/`           | Where to save generated files |
+| `GEMINI_MODEL`          | No       | -                                | Override model for init test  |
+| `GEMINI_PRO_MODEL`      | No       | `gemini-3.1-pro-preview`         | Pro model (Gemini 3.1)        |
+| `GEMINI_FLASH_MODEL`    | No       | `gemini-3-flash-preview`         | Flash model (Gemini 3)        |
+| `GEMINI_IMAGE_MODEL`    | No       | `gemini-3.1-flash-image-preview` | Image model (Nano Banana 2)   |
+| `GEMINI_VIDEO_MODEL`    | No       | `veo-2.0-generate-001`           | Video model                   |
+| `GEMINI_SPEECH_MODEL`   | No       | `gemini-2.5-flash-preview-tts`   | TTS model                     |
+| `GEMINI_CACHE_MODEL`    | No       | `gemini-2.0-flash-001`           | Context caching model         |
+| `VERBOSE`               | No       | `false`                          | Enable verbose logging        |
+| `QUIET`                 | No       | `false`                          | Minimize logging              |
+| `GEMINI_ENABLED_TOOLS`  | No       | -                                | Comma-separated list of tool groups to load (e.g., `query,search,image-gen`) |
+| `GEMINI_TOOL_PRESET`    | No       | -                                | Preset profile: `minimal`, `text`, `image`, `research`, `media`, `focused`, `full` |
 
 ---
 
@@ -340,6 +342,7 @@ By default, all 37 tools are loaded. To reduce context usage, configure which to
 | `image` | query, image-gen, image-edit, image-analyze |
 | `research` | query, search, deep-research, url-context, document |
 | `media` | query, image-gen, image-edit, image-analyze, video-gen, youtube, speech |
+| `focused` | query, search, structured, code-exec |
 | `full` | All 18 tool groups (default) |
 
 ### Using Presets
@@ -445,7 +448,7 @@ If you're hitting rate limits on the free tier:
 
 - Ensure your API key has access to image/video generation
 - Check output directory permissions
-- Files save to `GEMINI_OUTPUT_DIR` (default: `./gemini-output`)
+- Files save to `GEMINI_OUTPUT_DIR` (default: `~/.cache/gemini-mcp/`)
 - For 4K images, generation takes longer
 
 ---

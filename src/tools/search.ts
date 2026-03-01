@@ -11,8 +11,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getProModelName } from '../gemini-client.js'
 
 // Types for grounding metadata
 interface GroundingChunk {
@@ -92,13 +92,7 @@ export function registerSearchTool(server: McpServer): void {
       logger.info(`Google Search query: ${query.substring(0, 50)}...`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = getProModelName()
 
         // Execute with Google Search tool enabled
         const response = await genAI.models.generateContent({

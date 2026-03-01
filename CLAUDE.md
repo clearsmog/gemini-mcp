@@ -6,7 +6,7 @@ This document provides essential information for Claude when working with this G
 
 This project is an MCP (Model Context Protocol) server that connects Claude to Google's Gemini 3 AI models. It enables bidirectional collaboration between Claude and Gemini, allowing them to work together by sharing capabilities and agent tools.
 
-**Version:** 0.8.0
+**Version:** 0.9.0-custom
 **Package:** @rlabs-inc/gemini-mcp
 **MCP Registry:** io.github.rlabs-inc/gemini-mcp
 
@@ -110,15 +110,17 @@ This project is an MCP (Model Context Protocol) server that connects Claude to G
 |----------|----------|---------|-------------|
 | `GEMINI_API_KEY` | Yes | - | Google Gemini API key |
 | `GEMINI_MODEL` | No | - | Override model for init test |
-| `GEMINI_PRO_MODEL` | No | `gemini-3-pro-preview` | Pro model (Gemini 3) |
+| `GEMINI_PRO_MODEL` | No | `gemini-3.1-pro-preview` | Pro model (Gemini 3.1) |
 | `GEMINI_FLASH_MODEL` | No | `gemini-3-flash-preview` | Flash model (Gemini 3) |
-| `GEMINI_IMAGE_MODEL` | No | `gemini-3-pro-image-preview` | Image model (Nano Banana Pro) |
+| `GEMINI_IMAGE_MODEL` | No | `gemini-3.1-flash-image-preview` | Image model (Nano Banana 2) |
 | `GEMINI_VIDEO_MODEL` | No | `veo-2.0-generate-001` | Video model |
-| `GEMINI_OUTPUT_DIR` | No | `./gemini-output` | Output directory for generated files |
+| `GEMINI_SPEECH_MODEL` | No | `gemini-2.5-flash-preview-tts` | TTS model |
+| `GEMINI_CACHE_MODEL` | No | `gemini-2.0-flash-001` | Context caching model |
+| `GEMINI_OUTPUT_DIR` | No | `~/.cache/gemini-mcp/` | Output directory (platform-aware) |
 | `VERBOSE` | No | `false` | Enable verbose logging |
 | `QUIET` | No | `false` | Minimize logging |
 | `GEMINI_ENABLED_TOOLS` | No | - | Comma-separated list of tool groups to load |
-| `GEMINI_TOOL_PRESET` | No | - | Preset profile: minimal, text, image, research, media, full |
+| `GEMINI_TOOL_PRESET` | No | - | Preset profile: minimal, text, image, research, media, focused, full |
 
 ## Command Line Options
 
@@ -168,8 +170,8 @@ bun run lint       # Lint code with ESLint
 - `medium`: Balanced reasoning (Flash only)
 - `high`: Deep reasoning for complex tasks (default)
 
-### Nano Banana Pro (Image Generation)
-- Model: `gemini-3-pro-image-preview`
+### Nano Banana 2 (Image Generation)
+- Model: `gemini-3.1-flash-image-preview`
 - Resolutions: 1K, 2K (default), 4K
 - Google Search grounding for real-world accuracy
 - High-fidelity text rendering
@@ -179,13 +181,15 @@ bun run lint       # Lint code with ESLint
 - Required for multi-turn image editing
 - Preserved in conversation history for function calling
 
-## Key Changes in v0.8.0
+## Key Changes in v0.9.0-custom
 
-- **Image Analysis Tool**: New `gemini-analyze-image` with object detection and bounding boxes (community contribution by @acreeger)
-- **Thinking Level Support**: Added thinkingLevel parameter to image analysis for complex visual reasoning
-- **Dual Coordinate Output**: Returns both normalized (box_2d) and pixel (bbox_pixels) coordinates
+- **Centralized model config**: All tool files now use singleton `genAI` and getter functions from `gemini-client.ts`
+- **New env vars**: `GEMINI_SPEECH_MODEL`, `GEMINI_CACHE_MODEL` for overriding speech/cache model defaults
+- **Updated model defaults**: Pro model now defaults to `gemini-3.1-pro-preview`, Image model to `gemini-3.1-flash-image-preview`
+- **Auto-invoke**: All `mcp__gemini__*` tools auto-invoke without permission prompts
 
 ### Previous Versions
+- v0.8.x: Image Analysis Tool with bounding boxes (community contribution by @acreeger)
 - v0.7.x: Published to MCP Registry, CLI renamed to gcli
 - v0.6.3: Deep Research Agent, Token Counting
 - v0.6.0: TTS with 30 voices, context caching, URL analysis

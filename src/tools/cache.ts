@@ -13,8 +13,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getCacheModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -55,19 +55,11 @@ export function registerCacheTool(server: McpServer): void {
       logger.info(`Creating cache: ${displayName}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         if (!fs.existsSync(filePath)) {
           throw new Error(`File not found: ${filePath}`)
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-
-        // Use a specific model version for caching (required)
-        const model = 'gemini-2.0-flash-001'
+        const model = getCacheModelName()
 
         // Upload the file first
         const fileBuffer = fs.readFileSync(filePath)
@@ -154,17 +146,10 @@ export function registerCacheTool(server: McpServer): void {
       logger.info(`Querying cache: ${cacheName}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-
         // Look up cache by display name or use as-is
         const cacheInfo = activeCaches.get(cacheName)
         const actualCacheName = cacheInfo?.name || cacheName
-        const model = cacheInfo?.model || 'gemini-2.0-flash-001'
+        const model = cacheInfo?.model || getCacheModelName()
 
         // Query with cached content
         const response = await genAI.models.generateContent({
@@ -225,13 +210,6 @@ export function registerCacheTool(server: McpServer): void {
     logger.info('Listing caches')
 
     try {
-      const apiKey = process.env.GEMINI_API_KEY
-      if (!apiKey) {
-        throw new Error('GEMINI_API_KEY not set')
-      }
-
-      const genAI = new GoogleGenAI({ apiKey })
-
       // Get caches from API
       const caches: Array<{
         name?: string
@@ -299,13 +277,6 @@ export function registerCacheTool(server: McpServer): void {
       logger.info(`Deleting cache: ${cacheName}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-
         // Look up by display name
         const cacheInfo = activeCaches.get(cacheName)
         const actualCacheName = cacheInfo?.name || cacheName

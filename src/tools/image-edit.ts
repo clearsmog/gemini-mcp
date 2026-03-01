@@ -12,9 +12,10 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI, Modality } from '@google/genai'
+import { Modality } from '@google/genai'
 import { logger } from '../utils/logger.js'
 import { ensureOutputDir } from '../utils/output-dir.js'
+import { genAI, getImageModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -67,13 +68,7 @@ export function registerImageEditTool(server: McpServer): void {
       logger.info(`Starting image edit session: ${prompt.substring(0, 50)}...`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const imageModel = process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview'
+        const imageModel = getImageModelName()
 
         // Create a chat session for multi-turn editing
         // The SDK handles thought signatures automatically in chat mode

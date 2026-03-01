@@ -103,7 +103,7 @@ For CLI mode, run: gemini --help
   }
 
   // Get model name from environment or use default
-  const defaultModel = 'gemini-3-pro-preview'
+  const defaultModel = 'gemini-3.1-pro-preview'
   const geminiModel = process.env.GEMINI_MODEL || defaultModel
 
   // Log model configuration for debugging
@@ -136,7 +136,7 @@ For CLI mode, run: gemini --help
     // Create MCP server
     const server = new McpServer({
       name: 'Gemini',
-      version: '0.7.2',
+      version: '0.9.0-custom',
     })
 
     // Registry map of group ID -> register function

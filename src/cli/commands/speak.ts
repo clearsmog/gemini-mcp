@@ -169,7 +169,7 @@ export async function speakCommand(argv: string[]): Promise<void> {
 
     // Generate speech
     const response = await genAI.models.generateContent({
-      model: 'gemini-2.5-flash-preview-tts',
+      model: process.env.GEMINI_SPEECH_MODEL || 'gemini-2.5-flash-preview-tts',
       contents: prompt,
       config: {
         responseModalities: [Modality.AUDIO],

@@ -13,9 +13,10 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI, Modality } from '@google/genai'
+import { Modality } from '@google/genai'
 import { logger } from '../utils/logger.js'
 import { ensureOutputDir } from '../utils/output-dir.js'
+import { genAI, getSpeechModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -116,13 +117,7 @@ export function registerSpeechTool(server: McpServer): void {
       logger.info(`Speech generation: ${text.substring(0, 50)}...`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = 'gemini-2.5-flash-preview-tts'
+        const model = getSpeechModelName()
 
         // Build prompt with optional style
         const prompt = style ? `Say ${style}: "${text}"` : text
@@ -198,13 +193,7 @@ export function registerSpeechTool(server: McpServer): void {
       logger.info(`Dialogue generation: ${speaker1} & ${speaker2}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = 'gemini-2.5-flash-preview-tts'
+        const model = getSpeechModelName()
 
         // Build prompt
         let prompt = script

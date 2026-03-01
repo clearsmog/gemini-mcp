@@ -12,8 +12,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getProModelName, getFlashModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -65,18 +65,12 @@ export function registerDocumentTool(server: McpServer): void {
       logger.info(`Document analysis: ${filePath}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         // Check file exists
         if (!fs.existsSync(filePath)) {
           throw new Error(`File not found: ${filePath}`)
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = getProModelName()
 
         // Read file
         const fileBuffer = fs.readFileSync(filePath)
@@ -204,17 +198,11 @@ export function registerDocumentTool(server: McpServer): void {
       logger.info(`PDF summary: ${filePath}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         if (!fs.existsSync(filePath)) {
           throw new Error(`File not found: ${filePath}`)
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = getFlashModelName()
 
         // Build prompt based on style
         let prompt: string
@@ -299,17 +287,11 @@ export function registerDocumentTool(server: McpServer): void {
       logger.info(`Table extraction: ${filePath}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         if (!fs.existsSync(filePath)) {
           throw new Error(`File not found: ${filePath}`)
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = getProModelName()
 
         // Build prompt for table extraction
         let prompt: string

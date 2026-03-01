@@ -13,8 +13,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getProModelName, getFlashModelName } from '../gemini-client.js'
 
 // Types for URL context metadata
 interface UrlMetadata {
@@ -41,13 +41,7 @@ export function registerUrlContextTool(server: McpServer): void {
       logger.info(`URL context analysis: ${urls.length} URLs`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = getProModelName()
 
         // Build the prompt with URLs
         const urlList = urls.map((url, i) => `${i + 1}. ${url}`).join('\n')
@@ -124,13 +118,7 @@ export function registerUrlContextTool(server: McpServer): void {
       logger.info(`URL comparison: ${url1} vs ${url2}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = getFlashModelName()
 
         const prompt = aspect
           ? `Compare the ${aspect} from these two URLs:\n1. ${url1}\n2. ${url2}\n\nProvide a detailed comparison highlighting differences and similarities.`
@@ -185,13 +173,7 @@ export function registerUrlContextTool(server: McpServer): void {
       logger.info(`URL extraction: ${dataType} from ${url}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = getFlashModelName()
 
         // Build prompt based on data type
         let prompt: string

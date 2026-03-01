@@ -11,8 +11,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getProModelName, getFlashModelName } from '../gemini-client.js'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -131,11 +131,6 @@ export function registerImageAnalyzeTool(server: McpServer): void {
       logger.info(`Analyzing image: ${imagePath}`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         if (!fs.existsSync(imagePath)) {
           throw new Error(`File not found: ${imagePath}`)
         }
@@ -144,11 +139,7 @@ export function registerImageAnalyzeTool(server: McpServer): void {
         const mimeType = getImageMimeType(imagePath)
         const dimensions = extractImageDimensions(imagePath)
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const modelName =
-          model === 'pro'
-            ? process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
-            : process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const modelName = model === 'pro' ? getProModelName() : getFlashModelName()
 
         const fileSize = fileBuffer.length
         logger.debug(`Image size: ${fileSize} bytes, MIME type: ${mimeType}`)

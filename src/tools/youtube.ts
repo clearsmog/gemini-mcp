@@ -12,8 +12,8 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
-import { GoogleGenAI } from '@google/genai'
 import { logger } from '../utils/logger.js'
+import { genAI, getProModelName, getFlashModelName } from '../gemini-client.js'
 
 /**
  * Parse time string to seconds (supports formats like "1m30s", "90s", "1:30", "90")
@@ -64,18 +64,12 @@ export function registerYouTubeTool(server: McpServer): void {
       logger.info(`YouTube analysis: ${url.substring(0, 50)}...`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         // Validate YouTube URL
         if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
           throw new Error('Invalid YouTube URL. Please provide a valid YouTube video link.')
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+        const model = getProModelName()
 
         // Build the video part with optional clipping
         const videoPart: Record<string, unknown> = {
@@ -160,17 +154,11 @@ export function registerYouTubeTool(server: McpServer): void {
       logger.info(`YouTube summary: ${url.substring(0, 50)}...`)
 
       try {
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey) {
-          throw new Error('GEMINI_API_KEY not set')
-        }
-
         if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
           throw new Error('Invalid YouTube URL')
         }
 
-        const genAI = new GoogleGenAI({ apiKey })
-        const model = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
+        const model = getFlashModelName()
 
         // Build prompt based on style
         let prompt: string

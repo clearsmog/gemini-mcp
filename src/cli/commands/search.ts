@@ -132,7 +132,7 @@ export async function searchCommand(argv: string[]): Promise<void> {
     s.start('Searching the web...')
 
     const genAI = new GoogleGenAI({ apiKey })
-    const model = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+    const model = process.env.GEMINI_PRO_MODEL || 'gemini-3.1-pro-preview'
 
     // Execute with Google Search tool enabled
     const response = await genAI.models.generateContent({

@@ -61,6 +61,7 @@ export const PRESETS: Record<string, string[]> = {
   image: ['query', 'image-gen', 'image-edit', 'image-analyze'],
   research: ['query', 'search', 'deep-research', 'url-context', 'document'],
   media: ['query', 'image-gen', 'image-edit', 'image-analyze', 'video-gen', 'youtube', 'speech'],
+  focused: ['search', 'code-exec', 'deep-research', 'document', 'structured', 'url-context'],
   full: Object.keys(TOOL_GROUPS),
 }
 

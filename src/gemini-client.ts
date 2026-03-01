@@ -48,9 +48,34 @@ let proModelName: string
 let flashModelName: string
 let imageModelName: string
 let videoModelName: string
+let speechModelName: string
+let cacheModelName: string
 
 // Output directory for generated files
 let outputDir: string
+
+/**
+ * Model name getters - use these instead of hardcoding model names in tool files.
+ * Each getter returns the env-var override or the current default.
+ */
+export function getProModelName(): string {
+  return proModelName
+}
+export function getFlashModelName(): string {
+  return flashModelName
+}
+export function getImageModelName(): string {
+  return imageModelName
+}
+export function getVideoModelName(): string {
+  return videoModelName
+}
+export function getSpeechModelName(): string {
+  return speechModelName
+}
+export function getCacheModelName(): string {
+  return cacheModelName
+}
 
 /**
  * Initialize the Gemini client with configured models
@@ -66,11 +91,13 @@ export async function initGeminiClient(): Promise<void> {
     // Initialize the API client
     genAI = new GoogleGenAI({ apiKey })
 
-    // Set up models - Gemini 3 defaults (latest preview)
-    proModelName = process.env.GEMINI_PRO_MODEL || 'gemini-3-pro-preview'
+    // Set up models - latest available defaults (verified via ListModels API)
+    proModelName = process.env.GEMINI_PRO_MODEL || 'gemini-3.1-pro-preview'
     flashModelName = process.env.GEMINI_FLASH_MODEL || 'gemini-3-flash-preview'
-    imageModelName = process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview'
+    imageModelName = process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image-preview'
     videoModelName = process.env.GEMINI_VIDEO_MODEL || 'veo-2.0-generate-001'
+    speechModelName = process.env.GEMINI_SPEECH_MODEL || 'gemini-2.5-flash-preview-tts'
+    cacheModelName = process.env.GEMINI_CACHE_MODEL || 'gemini-2.0-flash-001'
 
     // Set up output directory for generated files (platform-appropriate location)
     outputDir = ensureOutputDir()
@@ -112,6 +139,8 @@ export async function initGeminiClient(): Promise<void> {
         logger.info(`Flash model: ${flashModelName}`)
         logger.info(`Image model: ${imageModelName}`)
         logger.info(`Video model: ${videoModelName}`)
+        logger.info(`Speech model: ${speechModelName}`)
+        logger.info(`Cache model: ${cacheModelName}`)
         logger.info(`Output directory: ${outputDir}`)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
