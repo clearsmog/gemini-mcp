@@ -19,90 +19,30 @@ This project is an MCP (Model Context Protocol) server that connects Claude to G
 - `src/utils/logger.ts`: Logging utilities with configurable verbosity
 - `src/tools/*.ts`: Various tool implementations for integration with Claude Code
 
-## Tools Implemented
+## Tools
 
-1. **Query** (`query.ts`): Direct queries to Gemini with thinking level control
-   - `thinkingLevel`: minimal, low, medium, high
+Tool details are discovered dynamically via MCP. This table maps tool groups to source files.
 
-2. **Brainstorm** (`brainstorm.ts`): Collaborative brainstorming between Claude and Gemini
-
-3. **Analyze** (`analyze.ts`): Code and text analysis using Gemini
-
-4. **Summarize** (`summarize.ts`): Content summarization at different detail levels
-
-5. **Image Gen** (`image-gen.ts`):
-   - `gemini-generate-image`: Generate images with Nano Banana Pro
-     - Up to 4K resolution (1K, 2K, 4K)
-     - 10 aspect ratios (1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9)
-     - Google Search grounding for real-world accuracy
-     - Returns base64 that Claude can SEE!
-   - `gemini-image-prompt`: Generate prompts for other image tools (legacy)
-
-6. **Image Edit** (`image-edit.ts`): Multi-turn conversational image editing
-   - `gemini-start-image-edit`: Start an editing session
-   - `gemini-continue-image-edit`: Continue refining with follow-up prompts
-   - `gemini-end-image-edit`: Close a session
-   - `gemini-list-image-sessions`: List active sessions
-
-7. **Video Gen** (`video-gen.ts`):
-   - `gemini-generate-video`: Start async video generation with Veo
-   - `gemini-check-video`: Check video generation status and download
-
-8. **Code Execution** (`code-exec.ts`):
-   - `gemini-run-code`: Write and execute Python code
-   - Supports: numpy, pandas, matplotlib, scipy, scikit-learn, tensorflow
-   - Returns charts as images Claude can see
-
-9. **Google Search** (`search.ts`):
-   - `gemini-search`: Real-time web search with inline citations
-   - Returns grounded responses with source URLs
-
-10. **Structured Output** (`structured.ts`):
-    - `gemini-structured`: JSON responses with schema validation
-    - `gemini-extract`: Convenience tool for entities, facts, sentiment, keywords
-
-11. **YouTube Analysis** (`youtube.ts`):
-    - `gemini-youtube`: Analyze YouTube videos by URL with clipping
-    - `gemini-youtube-summary`: Quick video summarization
-
-12. **Document Analysis** (`document.ts`):
-    - `gemini-analyze-document`: Analyze PDFs, DOCX, spreadsheets
-    - `gemini-summarize-pdf`: Quick PDF summarization
-    - `gemini-extract-tables`: Extract tables from documents
-
-13. **URL Context** (`url-context.ts`):
-    - `gemini-analyze-url`: Analyze content from URLs
-    - `gemini-compare-urls`: Compare content between two URLs
-    - `gemini-extract-from-url`: Extract specific data types from URLs
-
-14. **Context Caching** (`cache.ts`):
-    - `gemini-create-cache`: Cache large documents for repeated queries
-    - `gemini-query-cache`: Query cached content
-    - `gemini-list-caches`: List active caches
-    - `gemini-delete-cache`: Delete a cache
-
-15. **Speech/TTS** (`speech.ts`):
-    - `gemini-speak`: Text-to-speech with 30 voices
-    - `gemini-dialogue`: Multi-speaker dialogue generation
-    - `gemini-list-voices`: List available voices
-
-16. **Token Counting** (`token-count.ts`):
-    - `gemini-count-tokens`: Count tokens and estimate costs
-
-17. **Deep Research** (`deep-research.ts`):
-    - `gemini-deep-research`: Start autonomous multi-step research (async)
-    - `gemini-check-research`: Check research status and get results
-    - `gemini-research-followup`: Ask follow-up questions on completed research
-    - Note: Research typically takes 5-20 minutes, max 60 minutes
-    - Full response saved to `GEMINI_OUTPUT_DIR` as JSON
-
-18. **Image Analysis** (`image-analyze.ts`): *Community contribution by @acreeger*
-    - `gemini-analyze-image`: Analyze images with object detection and bounding boxes
-      - Supports JPEG, PNG, WebP, HEIC, HEIF, GIF
-      - Returns `box_2d` (normalized 0-1000) and `bbox_pixels` (pixel coordinates)
-      - Structured JSON output with object labels and confidence
-      - Thinking level support for complex analysis
-      - Handles large files (>20MB) via Files API automatically
+| Tool Group | File | Description |
+|------------|------|-------------|
+| Query | `query.ts` | Direct queries to Gemini with thinking level control |
+| Brainstorm | `brainstorm.ts` | Collaborative brainstorming between Claude and Gemini |
+| Analyze | `analyze.ts` | Code and text analysis |
+| Summarize | `summarize.ts` | Content summarization at different detail levels |
+| Image Gen | `image-gen.ts` | Image generation with Nano Banana Pro (see Gemini 3 section below) |
+| Image Edit | `image-edit.ts` | Multi-turn conversational image editing sessions |
+| Video Gen | `video-gen.ts` | Async video generation with Veo (poll for results) |
+| Code Exec | `code-exec.ts` | Python execution (numpy, pandas, matplotlib, scipy, sklearn, tf) |
+| Search | `search.ts` | Real-time web search with inline citations |
+| Structured | `structured.ts` | JSON responses with schema validation; entity extraction |
+| YouTube | `youtube.ts` | Video analysis and summarization by URL |
+| Document | `document.ts` | PDF, DOCX, spreadsheet analysis and table extraction |
+| URL Context | `url-context.ts` | Analyze, compare, and extract data from URLs |
+| Cache | `cache.ts` | Context caching for repeated queries on large documents |
+| Speech/TTS | `speech.ts` | Text-to-speech (30 voices) and multi-speaker dialogue |
+| Token Count | `token-count.ts` | Token counting and cost estimation |
+| Deep Research | `deep-research.ts` | Autonomous multi-step research (5-60 min async; saved to `GEMINI_OUTPUT_DIR`) |
+| Image Analysis | `image-analyze.ts` | Object detection with bounding boxes (by @acreeger) |
 
 ## Environment Variables
 
@@ -173,8 +113,11 @@ bun run lint       # Lint code with ESLint
 ### Nano Banana 2 (Image Generation)
 - Model: `gemini-3.1-flash-image-preview`
 - Resolutions: 1K, 2K (default), 4K
-- Google Search grounding for real-world accuracy
+- 14 aspect ratios (including 1:4, 4:1, 1:8, 8:1 for banners)
+- Thinking level support (minimal/low/medium/high, default: high)
+- Google Search grounding ON by default
 - High-fidelity text rendering
+- Note: `imageSearch` grounding type is Python SDK only (TS SDK lacks `searchTypes` field)
 
 ### Thought Signatures
 - Handled automatically by the SDK when using chat sessions
@@ -187,14 +130,6 @@ bun run lint       # Lint code with ESLint
 - **New env vars**: `GEMINI_SPEECH_MODEL`, `GEMINI_CACHE_MODEL` for overriding speech/cache model defaults
 - **Updated model defaults**: Pro model now defaults to `gemini-3.1-pro-preview`, Image model to `gemini-3.1-flash-image-preview`
 - **Auto-invoke**: All `mcp__gemini__*` tools auto-invoke without permission prompts
-
-### Previous Versions
-- v0.8.x: Image Analysis Tool with bounding boxes (community contribution by @acreeger)
-- v0.7.x: Published to MCP Registry, CLI renamed to gcli
-- v0.6.3: Deep Research Agent, Token Counting
-- v0.6.0: TTS with 30 voices, context caching, URL analysis
-- v0.5.0: Code execution, Google Search, YouTube analysis, document analysis
-- v0.3.0: Gemini 3 models, thinking levels, 4K image gen, multi-turn editing
 
 ## Future Roadmap
 
