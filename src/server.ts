@@ -60,7 +60,7 @@ export async function startMcpServer(argv: string[]): Promise<void> {
 
   // Show help if requested
   if (values.help) {
-    console.log(`
+    console.error(`
 MCP Server Gemini - Integrates Google's Gemini models with Claude Code
 
 Usage:

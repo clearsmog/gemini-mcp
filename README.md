@@ -46,6 +46,26 @@ claude mcp add gemini -s user -- env GEMINI_API_KEY=YOUR_KEY npx -y @rlabs-inc/g
 claude mcp add gemini -s user -- env GEMINI_API_KEY=YOUR_KEY bunx @rlabs-inc/gemini-mcp
 ```
 
+### MCP Server for Claude Desktop
+
+Add to your `claude_desktop_config.json` (Settings > Developer > Edit Config):
+
+```json
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "npx",
+      "args": ["-y", "@rlabs-inc/gemini-mcp"],
+      "env": {
+        "GEMINI_API_KEY": "YOUR_KEY"
+      }
+    }
+  }
+}
+```
+
+Then restart Claude Desktop. The tools will appear under the hammer icon.
+
 ### CLI (Global Install)
 
 ```bash
